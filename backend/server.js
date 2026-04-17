@@ -1,7 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
-require('dotenv').config();
 
 const app = express();
 app.use(cors());
@@ -77,8 +77,8 @@ app.post('/api/research', async (req, res) => {
     let summary = "Analysis of current research indicates multiple ongoing studies.";
     
     try {
-      const ollamaRes = await axios.post('http://localhost:11434/api/generate', {
-        model: "llama3",
+      const response = await axios.post('http://localhost:11434/api/generate', {
+        model: "tinyllama",
         prompt: `Summarize this medical data for a patient with ${disease}: ${JSON.stringify(allData.slice(0,3))}`,
         stream: false
       });
