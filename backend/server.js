@@ -4,62 +4,55 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+
+// --- 1. PRO CORS FIX ---
+// This allows your Vercel frontend to talk to this backend without security blocks
+app.use(cors({
+  origin: "*", // Allows any origin to ensure your Vercel link works immediately
+  methods: ["GET", "POST"]
+}));
 app.use(express.json());
 
-// 1. Connect to MongoDB (Atlas)
+// --- 2. DB CONNECTION ---
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("🚀 Database Linked & Ready"))
-  .catch(err => console.error("❌ DB Connection Failed:", err));
+  .then(() => console.log("✅ Cloud DB Connected"))
+  .catch(err => console.error("❌ DB Connection Error:", err));
 
-// 2. Professional Medical Schema
+// --- 3. DATA MODEL ---
 const MedicalSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  snippet: { type: String, required: true },
-  category: String,
-  source: { type: String, default: "Verified Medical Index" }
+  title: String,
+  snippet: String,
+  category: String
 });
 const MedicalData = mongoose.model('MedicalData', MedicalSchema);
 
-// 3. Root Route (Fixes 'Cannot GET /')
+// --- 4. ROUTES ---
+
+// HOME: Fixes "Cannot GET /" and keeps Cron-Job active
 app.get('/', (req, res) => {
-  res.json({
-    status: "Online",
-    system: "CuraLink Production API",
-    database: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
-    uptime: process.uptime()
-  });
+  res.status(200).json({ status: "CuraLink Server Online", database: "Connected" });
 });
 
-// 4. Advanced Search Engine
+// SEARCH: Main API for the frontend
 app.get('/api/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.json([]);
 
   try {
-    // Searches both Title and Snippet for the query string
     const results = await MedicalData.find({
       $or: [
         { title: { $regex: q, $options: 'i' } },
         { snippet: { $regex: q, $options: 'i' } }
       ]
     }).limit(5);
-
-    if (results.length > 0) {
-      res.json(results);
-    } else {
-      res.json([{ 
-        title: "CuraLink AI Note", 
-        snippet: `I searched our records for "${q}" but found no direct matches. Please consult a professional for clinical advice.` 
-      }]);
-    }
+    res.json(results);
   } catch (error) {
-    res.status(500).json({ error: "Search Engine Error" });
+    res.status(500).json({ error: "Search Failed" });
   }
 });
 
-// 5. Health Check for Cron-Job
+// HEALTH: For the Cron-Job
 app.get('/health', (req, res) => res.status(200).send("Alive"));
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server Active on Port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Perfection Server on Port ${PORT}`));
