@@ -7,7 +7,7 @@ CuraLink is a professional, high-precision **MERN Stack** application designed f
 ### 🌐 Live Deployment
 * **Live Application:** [https://curalink-rouge.vercel.app/](https://curalink-rouge.vercel.app/)
 * **Production Backend:** [https://curalink-backend-73rv.onrender.com/](https://curalink-backend-73rv.onrender.com/)
-
+* **Demo Video:** [Part 1: https://www.loom.com/share/b52d22d9f77a4a939c1168f514ed29ac] [Part 2: https://www.loom.com/share/321e184013f448fe95b010c9c6b0c9dd]
 ---
 
 ### 🚀 Core Research Capabilities
